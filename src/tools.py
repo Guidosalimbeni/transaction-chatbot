@@ -5,11 +5,8 @@ layer stays framework-agnostic and testable; the tools layer is what the
 agent imports.
 """
 from __future__ import annotations
-
 from typing import Optional
-
 from langchain_core.tools import tool
-
 from . import data
 
 
@@ -92,10 +89,38 @@ def find_unfamiliar_charges(customer_id: str) -> dict:
     return data.find_unfamiliar_charges(customer_id)
 
 
+@tool
+def summarise_spending(
+    customer_id: str,
+    group_by: str = "merchant",
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+) -> dict:
+    """Return exact spending totals grouped by merchant, category, or month.
+ 
+    Use this WHENEVER the user asks for sums, totals, or breakdowns —
+    e.g. 'how much did I spend per merchant', 'what did I spend on
+    groceries', 'monthly spending trend'. This tool computes totals
+    deterministically; do NOT add up transactions yourself.
+ 
+    Args:
+        customer_id: The customer's ID.
+        group_by: One of 'merchant', 'category', or 'month'. Default 'merchant'.
+        start_date: Optional ISO date 'YYYY-MM-DD' to filter from.
+        end_date: Optional ISO date 'YYYY-MM-DD' to filter to.
+    """
+    return data.summarise_spending(
+        customer_id=customer_id,
+        group_by=group_by,  # type: ignore[arg-type]
+        start_date=start_date,
+        end_date=end_date,
+    )
+ 
 # Exported as a list for easy binding to the agent.
 ALL_TOOLS = [
     get_balance,
     get_transactions,
     search_transactions,
     find_unfamiliar_charges,
+    summarise_spending,
 ]

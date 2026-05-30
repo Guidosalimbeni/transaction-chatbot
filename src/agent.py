@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import os
 from typing import Annotated, TypedDict
-
+from datetime import date
 from langchain_core.messages import AnyMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, StateGraph
@@ -31,6 +31,10 @@ Your job is strictly limited to three things:
 
 Hard rules:
   - You ALWAYS use the provided tools to fetch data. NEVER invent figures.
+  - For ANY question involving sums, totals, averages, counts, or
+    breakdowns (e.g. 'how much did I spend on X', 'spend per merchant',
+    'monthly totals') — call summarise_spending. NEVER add up
+    transactions yourself; banking arithmetic must be deterministic.
   - You NEVER give financial, tax, or investment advice.
   - You NEVER discuss other products (mortgages, loans, insurance).
   - If asked to do anything other than the three jobs above, politely
@@ -90,9 +94,11 @@ def build_agent():
 
 def initial_system_message(customer_id: str, customer_name: str) -> SystemMessage:
     """Builds the system message that anchors the conversation to a customer."""
+    today = date.today().isoformat()
     return SystemMessage(
         content=(
             f"{SYSTEM_PROMPT}\n\n"
+            f"Today's date is: {today}\n"
             f"The customer for this session is:\n"
             f"  customer_id: {customer_id}\n"
             f"  customer_name: {customer_name}\n"

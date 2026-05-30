@@ -175,3 +175,64 @@ def find_unfamiliar_charges(customer_id: str) -> dict:
             for _, r in unfamiliar.iterrows()
         ],
     }
+
+
+def summarise_spending(
+    customer_id: str,
+    group_by: Literal["merchant", "category", "month"] = "merchant",
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+) -> dict:
+    """Group spending (debits only) by merchant, category, or month.
+ 
+    Returns exact totals computed in pandas — the LLM should call this
+    rather than summing transactions itself, because banking arithmetic
+    needs to be deterministic.
+    """
+    df = _load()
+    cust = df[df["customer_id"] == customer_id].copy()
+    if cust.empty:
+        return {"error": f"Customer {customer_id} not found."}
+ 
+    if start_date:
+        cust = cust[cust["date"] >= pd.to_datetime(start_date)]
+    if end_date:
+        cust = cust[cust["date"] <= pd.to_datetime(end_date)]
+ 
+    # Only count debits (spend), not income.
+    spend = cust[cust["amount"] < 0].copy()
+    spend["amount"] = spend["amount"].abs()
+ 
+    if spend.empty:
+        return {
+            "customer_id": customer_id,
+            "group_by": group_by,
+            "summary": [],
+            "total_spend": 0.0,
+        }
+ 
+    if group_by == "month":
+        spend["group_key"] = spend["date"].dt.to_period("M").astype(str)
+    else:
+        spend["group_key"] = spend[group_by]  # 'merchant' or 'category' column
+ 
+    grouped = (
+        spend.groupby("group_key")["amount"]
+        .agg(["sum", "count"])
+        .reset_index()
+        .sort_values("sum", ascending=False)
+    )
+ 
+    return {
+        "customer_id": customer_id,
+        "group_by": group_by,
+        "total_spend": round(float(spend["amount"].sum()), 2),
+        "summary": [
+            {
+                "group": str(r["group_key"]),
+                "total": round(float(r["sum"]), 2),
+                "count": int(r["count"]),
+            }
+            for _, r in grouped.iterrows()
+        ],
+    }
