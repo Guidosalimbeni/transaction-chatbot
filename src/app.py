@@ -11,7 +11,10 @@ from __future__ import annotations
 import os
 
 import streamlit as st
+from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+
+load_dotenv()
 
 from src import data
 from src.agent import build_agent, initial_system_message
@@ -20,8 +23,13 @@ from src.guardrails import check_input, check_output
 # ---------------------------------------------------------------------------
 # Page setup
 # ---------------------------------------------------------------------------
-st.set_page_config(page_title="Lloyds Transaction Chatbot", page_icon="💷", layout="centered")
-st.title("💷 Lloyds Transaction Assistant")
+st.set_page_config(page_title="Lloyds Transaction Chatbot", page_icon="src/images/logo.png", layout="centered")
+
+logo_col, title_col = st.columns([1, 5], vertical_alignment="center")
+with logo_col:
+    st.image("src/images/logo.png", width=50)
+with title_col:
+    st.title("Lloyds Transaction Assistant")
 st.caption("Ask about your balance, recent transactions, or charges you don't recognise.")
 
 # ---------------------------------------------------------------------------
