@@ -1,19 +1,6 @@
 # Transaction Chatbot — PoC
 
-Take-home submission for the **AI Tech Lead** role.
-
 A minimal working agent that lets bank customers check balances, browse transaction history, and ask about charges they don't recognise.
-
----
-
-## Stack
-
-- **LangGraph** — agent orchestration (ReAct-style: LLM → tool → LLM → respond)
-- **Streamlit** — chat UI (one process, no separate frontend)
-- **OpenAI-compatible LLM** — defaults to `gpt-4o-mini`, configurable via env
-- **pandas + CSV** — stands in for the Core Banking API
-
----
 
 ## Run it
 
@@ -26,7 +13,8 @@ pip install -e .
 # 2. Set your API key
 read .env.example file
 insert the API key for the LLM of choice
-if not Chat
+
+delete the .example extension so to have a sinle .env file with the assigned API key
 
 # 3. Run
 streamlit run src/app.py
@@ -63,6 +51,15 @@ export MODEL_NAME=llama3.1
 pip install -e ".[dev]"
 pytest tests/
 ```
+
+---
+
+## Stack
+
+- **LangGraph** — agent orchestration (ReAct-style: LLM → tool → LLM → respond)
+- **Streamlit** — chat UI (one process, no separate frontend)
+- **OpenAI-compatible LLM** — defaults to `gpt-4o-mini`, configurable via env
+- **pandas + CSV** — stands in for the Core Banking API
 
 ---
 
