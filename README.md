@@ -6,6 +6,12 @@ A minimal working agent that lets bank customers check balances, browse transact
 
 ### Option 1 — local Python
 
+<!-- if in VS code -->
+
+simply create virtual enviroment and would automatically install dependencies
+
+otherwise reccommend to create a .venv and do pip install -e . then proceed with step 2 and 3
+
 ```bash
 # 1. Install (Python 3.11+)
 pip install -e .

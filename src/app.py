@@ -50,7 +50,7 @@ with st.sidebar:
         "- Show me my recent transactions\n"
         "- How much did I spend on groceries?\n"
         "- Are there any charges I might not recognise?\n"
-        "- how much did I spend per merchant this month?"
+        "- how much did I spend per merchant last month?"
     )
 
     st.markdown("---")
